@@ -1,7 +1,7 @@
 /*
  * Name: Ricardo Serrano-Smith
  *
- * Program name: Practice-1_bit_twiddling.c
+ * Program name: bit_twiddling.c
  * Date created: 09 November 2019
  * Description:  Creates a sweeping type motion with the LED's. LED's turn off *               when button is pressed.
  * Components:   4 LED's ~ PORTS B0-B3
@@ -60,8 +60,8 @@ int main(void) {
         } else {
             counter += direction;   //controls direction of bits
         }
-
         _delay_ms(TIME_ON);
+    
     }
     return 0;
 }
