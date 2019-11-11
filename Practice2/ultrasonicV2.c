@@ -102,8 +102,7 @@ int main(void) {
 
 uint8_t convert(uint16_t count, uint8_t remainder) {
     uint16_t total = (count * 255) + remainder;
-    total = total / 4;
-    return ((total*35)/1024); // 343(m/s)*100(cm/m)*10^-6(s/us) approximation
+    return ((total*35)/4096); // Refer to README.md
 }
 
 void timer0_init(void) {

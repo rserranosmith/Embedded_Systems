@@ -11,6 +11,7 @@ An ultrasonic sensor works by sending and recieving sound pulses, similar to ech
 Measuring the amount of time that the `echo` pin was held high allows for the discovery of how far an object is from the sensor.
 
 ![alt text](https://www.electronicwings.com/public/images/user_images/images/Sensor%20%26%20Modules/Ultrasonic%20module%20HC-SR%2004/2_Ultrasonic_module_timing_diagram.png)
+
 Reference: Electronic Wings
 
 ## Parts List
@@ -34,6 +35,31 @@ Reference: Electronic Wings
 | Trigger     | PORTB1 |
 | Echo        | PORTD2 |
 | LED (Anode) | PORTB3 |
+
+## Formula
+
+---
+
+<br>
+Clock Speed:
+
+16000000 Hz / 8 = 2000000 Hz
+
+1 / 2000000 Hz = `0.0000005 seconds (0.5 us)`
+<br> <br> <br>
+Distance:
+
+Speed of Sounds - 343 m/s
+
+343 m/s x (100 cm/m) x (10^-6 s/us) = 0.0343 cm/us
+
+0.0343 ~ (35/1024)
+
+Distance = 0.5 x clkCounts x (35/1024) / 2
+
+Distance = (clkCounts / 4) x (35/1024)
+
+`Distance = (clkCounts x 35) / 4096`
 
 ## Compilation
 
