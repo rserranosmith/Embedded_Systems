@@ -2,6 +2,28 @@
    This will disable PD0 and PD1 as they are used for serial communication.
    NOTE: To end a screen session, type Ctrl+a followed by k. */ 
 
+/*
+ * Name: Ricardo Serrano-Smith
+ *
+ * Program name: ultrasonicV2.c
+ * Date created: 09 November 2019
+ * Description:  Uses an ultrasonic sensor to measure the distance of an 
+ *               object (in centimeters).
+ * Components:   1 LED ~ (PortB3) | Optional
+                 1 220-Ohm resistor | Optional
+                 1 HC-SR04 Ultrasonic Sensor
+                    -Trigger (PORTB1)
+                    -ECHO (PORTD2)
+ * Target device: Arduino UNO (ATMEGA 328p U)
+ * Tool version: 64-Bit
+ * Dependencies: None
+ *
+ *
+ * Revisions: None
+ *
+ *
+ */
+
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
@@ -24,53 +46,54 @@ int main(void) {
 
     DDRB |= (1 << DDB1); //Output (Trigger)
     DDRB |= (1 << DDB3); //Output (LED)
-    PORTB |= (1 << PORTB4); //Input (Button)
     PORTD |= (1 << PORTD2); //Input (Echo)
     
     USART_Init();		//Initiates USART
 	printf("Welcome \n\r");
     int0_init();
-    timer0_init();
+    
     sei();
 
     while(1) {
         switch(echo_flag) {
-            case 0:
-                if(!launched) {
+            case 0: //Send pulse
+                if(!launched) { //Only sends pulse once
                     PORTB |= (1 << PORTB1); //Send Pulse
-                    _delay_us(10);
+                    _delay_us(10); //wait 10 us 
                     PORTB &= ~(1 << PORTB1);
-                    launched = 1;
+                    launched = 1; // Update that pulse was sent
                 }
                 break;
 
-            case 1:
-                if(launched) {
-                    TCNT0 = 0;
-                    count = 0;
-                    launched = 0;
+            case 1: //Set timer
+                if(launched) {  //Makes sure that pulse was sent
+                    TCNT0 = 0;  //clears counter
+                    timer0_init(); //Starts timer
+                    launched = 0; //resets state 0
                 }
                 break;
 
-            case 2:
-                remainder = TCNT0;
-                distance = convert(count,remainder);
+            case 2: //read timer
+                TCCR0B &= ~(1 << CS01); // Stops timer
+                remainder = TCNT0;  //Obtains current count
+
+                distance = convert(count,remainder); //Converts
                 printf("Distance: %u cm\n\r", distance);
 
-                PORTB |= (1 << PORTB3);
+                PORTB |= (1 << PORTB3); //Blinks LED
                 _delay_ms(100);
                 PORTB &= ~(1 << PORTB3);
                 _delay_ms(300);
     
-                echo_flag = 0;
+                echo_flag = 0;  //Resets flag & count
                 count = 0;
                 break;
 
-            default:
+            default: //Blinks slowly
                 PORTB |= (1 << PORTB3);
-                _delay_ms(100);
+                _delay_ms(1000);
                 PORTB &= ~(1 << PORTB3);
-                _delay_ms(100);
+                _delay_ms(1000);
                 break;
         }
     }
@@ -98,8 +121,8 @@ ISR (TIMER0_OVF_vect) {
 }
 
 ISR (INT0_vect) {
-    if((PIND & (1 << PIND2))) {
-        echo_flag = 1;
-    } else
-        echo_flag = 2;
+    if((PIND & (1 << PIND2))) { //Checks if pin is high
+        echo_flag = 1;  //Enter Case 1
+    } else  //pins is low
+        echo_flag = 2; //Enter Case 2
 }
