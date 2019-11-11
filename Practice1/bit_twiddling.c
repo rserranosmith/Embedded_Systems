@@ -16,6 +16,7 @@
  *
  *
  */
+
 #include <avr/io.h>
 #include <util/delay.h>
 
@@ -28,7 +29,6 @@ int main(void) {
     DDRB |= (1 << DDB0) | (1 << DDB1) | (1 << DDB2) | (1 << DDB3); //Outputs
     PORTD |= (1 << PORTD7); //Input
     while (1) {
-        
         PORTB &= MASK;  //Turns bits off
         switch(counter) {
             case 0:
